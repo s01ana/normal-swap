@@ -12,7 +12,6 @@ export const useProvider = (providerStr: string, iframeWindow: Window) => {
     useEffect(() => {
         async function getProvider() {
             const providerFromWagmi = await connector?.getProvider?.();
-            console.log('providerFromWagmi===>', providerFromWagmi);
             setProviderFromWindow(providerFromWagmi as any || window.ethereum);
         }
         getProvider();

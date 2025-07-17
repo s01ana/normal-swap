@@ -11,8 +11,6 @@ const SwapWidget = () => {
   const widgetHandler = useRef<ReturnType<typeof createOkxSwapWidget>>(null);
   const provider = useProvider('', widgetHandler.current?.iframeWindow as Window);
 
-  console.log('provider===>', provider);
-
   const { open: openConnectModal } = useAppKit()
   const { isConnected } = useAppKitAccount()
 
@@ -44,7 +42,6 @@ const SwapWidget = () => {
       {
         event: OkxEvents.ON_CONNECT_WALLET,
         handler: (payload: ProviderEventMessage) => {
-          console.log('NO_WALLET_CONNECT===>', payload);
           openConnectModal?.();
         },
       },
@@ -78,7 +75,6 @@ const SwapWidget = () => {
   const { connector } = useAccount();
 
   const getProviderType = useCallback(() => {
-    console.log('getProviderType====>', connector);
     const isWalletConnect =
       connector?.id === 'walletConnect' || connector?.type === 'walletConnect';
 

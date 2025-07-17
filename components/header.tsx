@@ -30,9 +30,9 @@ export default function Header() {
         </div>
 
         <div className="flex gap-2">
-          <div className="hidden sm:flex">
+          {/* <div className="hidden sm:flex">
             <ModeToggle />
-          </div>
+          </div> */}
           <div className="items-center">
             {!isConnected && 
               <Button
