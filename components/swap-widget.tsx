@@ -1,7 +1,7 @@
 "use client"
 
 import { useProvider } from '@/hooks/use-provider';
-import { createOkxSwapWidget, IWidgetConfig, OkxSwapWidgetProps, ProviderEventMessage, ProviderType } from '@okxweb3/dex-widget'
+import { createOkxSwapWidget, EthereumProvider, IWidgetConfig, IWidgetParams, OkxEvents, OkxSwapWidgetProps, ProviderEventMessage, ProviderType } from '@okxweb3/dex-widget'
 import { useAppKit, useAppKitAccount } from '@reown/appkit/react'
 import { useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import { useAccount } from 'wagmi';
@@ -9,7 +9,7 @@ import { useAccount } from 'wagmi';
 const SwapWidget = () => {
   const widgetRef = useRef<HTMLDivElement>(null)
   const widgetHandler = useRef<ReturnType<typeof createOkxSwapWidget>>(null);
-  const provider = useProvider('', widgetHandler.current?.iframeWindow as any);
+  const provider = useProvider('', widgetHandler.current?.iframeWindow as Window);
 
   console.log('provider===>', provider);
 
@@ -37,38 +37,38 @@ const SwapWidget = () => {
     }
   }
 
-  const initialConfig = {
+  const initialConfig: IWidgetConfig = {
     params,
     provider,
     listeners: [
       {
-        event: 'ON_CONNECT_WALLET',
+        event: OkxEvents.ON_CONNECT_WALLET,
         handler: (payload: ProviderEventMessage) => {
           console.log('NO_WALLET_CONNECT===>', payload);
           openConnectModal?.();
         },
       },
-      {
-        event: 'ON_SUBMIT_TX',
-        handler: (res: any) => {
-          console.log('ON_SUBMIT_TX===>', res.data);
-          if (res.data.txHash) {
-            setMessage(`Transaction submitted successfully, txHash: ${res.data.txHash}`);
-            setOpen(true);
-          }
-        },
-      },
-      {
-        event: 'ON_FROM_CHAIN_CHANGE',
-        handler: (res: any) => {
-          console.log('ON_FROM_CHAIN_CHANGE===>', res.data);
-        },
-      },
+      // {
+      //   event: OkxEvents.ON_SUBMIT_TX,
+      //   handler: (res: ProviderEventMessage) => {
+      //     console.log('ON_SUBMIT_TX===>', res.data);
+      //     if (res.data.txHash) {
+      //       setMessage(`Transaction submitted successfully, txHash: ${res.data.txHash}`);
+      //       setOpen(true);
+      //     }
+      //   },
+      // },
+      // {
+      //   event: OkxEvents.ON_FROM_CHAIN_CHANGE,
+      //   handler: (res: ProviderEventMessage) => {
+      //     console.log('ON_FROM_CHAIN_CHANGE===>', res.data);
+      //   },
+      // },
     ]
   }
 
   useEffect(() => {
-    widgetHandler.current = createOkxSwapWidget(widgetRef.current as HTMLDivElement, initialConfig as unknown as IWidgetConfig);
+    widgetHandler.current = createOkxSwapWidget(widgetRef.current as HTMLDivElement, initialConfig);
 
     return () => {
       widgetHandler.current?.destroy();
@@ -103,7 +103,7 @@ const SwapWidget = () => {
           setOpen(false);
           widgetHandler.current?.updateParams(newParams);
         },
-        updateProvider: (newProvider: any, providerType: ProviderType) => {
+        updateProvider: (newProvider: EthereumProvider, providerType: ProviderType) => {
           setOpen(false);
           widgetHandler.current?.updateProvider(newProvider, providerType);
         },
@@ -111,11 +111,11 @@ const SwapWidget = () => {
           setOpen(false);
           widgetHandler.current?.destroy();
         },
-        reload: (params: any) => {
+        reload: (params: IWidgetParams) => {
           setOpen(false);
           widgetHandler.current?.destroy();
           widgetHandler.current = createOkxSwapWidget(widgetRef.current as HTMLDivElement, {
-            ...(initialConfig as unknown as IWidgetConfig),
+            ...(initialConfig),
             params,
           });
         },
